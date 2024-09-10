@@ -1,8 +1,0 @@
-log:
-  level: "info"
-  output: "console"
-  file:
-    path: "/var/log/myapp.log"
-    max_size: 100
-    max_age: 30
-    max_backups: 3

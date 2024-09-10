@@ -9,7 +9,11 @@ import (
 )
 
 func main() {
-    cfg := utils.LoadConfig()
+    cfg,err := utils.LoadConfig()
+    if err != nil {
+        panic(err)
+    }
+    
     logger := log.NewLogger(cfg.Log)
 
     dbConn, err := db.NewPostgresConnection(cfg.Database)

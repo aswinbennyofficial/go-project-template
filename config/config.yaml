@@ -1,0 +1,28 @@
+app:
+  name: "MyApp"
+  version: "1.0.0"
+  port: 8080
+
+database:
+  host: "localhost"
+  port: 5432
+  user: "myapp_user"
+  password: "your_secure_password"
+  dbname: "myapp_db"
+
+redis:
+  address: "localhost:6379"
+  password: "your_redis_password"
+  db: 0
+
+log:
+  level: "info"
+  output: "console"
+  file:
+    path: "/var/log/myapp.log"
+    max_size: 100
+    max_age: 30
+    max_backups: 3
+
+auth:
+  jwt_secret: "your_very_secure_jwt_secret"
