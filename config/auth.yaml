@@ -1,0 +1,3 @@
+auth:
+  jwt_secret: "your-secret-key-here"
+  token_expiration: 24h
