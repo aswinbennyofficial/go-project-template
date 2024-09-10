@@ -7,11 +7,34 @@ services:
     depends_on:
       - db
       - redis
-  db:
-    image: postgres:13
     environment:
-      POSTGRES_DB: myapp
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
+      - CONFIG_FILE=/app/config/config.yaml
+    # volumes:
+    #   - ./config:/app/config
+    restart: on-failure
+
+  db:
+    image: bitnami/postgresql
+    environment:
+      - POSTGRESQL_DATABASE=myapp_db
+      - POSTGRESQL_USERNAME=myapp_user
+      - POSTGRESQL_PASSWORD=your_secure_password
+    volumes:
+      - postgres_data:/bitnami/postgresql
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "myapp_user"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
   redis:
-    image: redis:6
+    image: redis/redis-stack:latest
+    command: redis-server --requirepass your_redis_password
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:

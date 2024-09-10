@@ -4,14 +4,14 @@ app:
   port: 8080
 
 database:
-  host: "localhost"
+  host: "db"
   port: 5432
   user: "myapp_user"
   password: "your_secure_password"
   dbname: "myapp_db"
 
 redis:
-  address: "localhost:6379"
+  address: "redis:6379"
   password: "your_redis_password"
   db: 0
 
