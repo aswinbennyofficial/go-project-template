@@ -33,7 +33,7 @@ func (s *Server) Start() {
 
     r.Use(middleware.RequestID)
     r.Use(middleware.RealIP)
-    r.Use(middleware.Logger)
+    r.Use(middlewares.ZerologRequestLogger(s.Logger))
     r.Use(middleware.Recoverer)
     
     r.Use(jwtauth.Verifier(tokenAuth))
