@@ -1,13 +1,9 @@
-.PHONY: build run test migrate
+.PHONY: build run
 
 build:
-    go build -o myapp
+    podman-compose build
 
 run: build
-    ./myapp
+    podman-compose up
 
-test:
-    go test ./...
 
-migrate:
-    goose -dir ./src/db/migrations postgres "user=user password=password dbname=myapp sslmode=disable" up
