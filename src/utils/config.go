@@ -3,7 +3,18 @@ package utils
 import (
     "fmt"
     "github.com/spf13/viper"
+    "github.com/go-redis/redis/v8"
+	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/rs/zerolog"
 )
+
+type App struct {
+    Config *Config
+    Logger zerolog.Logger
+    DB     *pgxpool.Pool
+    Redis  *redis.Client
+}
+
 
 type Config struct {
     App      AppConfig      `mapstructure:"app"`
