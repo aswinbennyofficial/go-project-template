@@ -9,6 +9,9 @@ database:
   user: "myapp_user"
   password: "your_secure_password"
   dbname: "myapp_db"
+  migrations:
+    enabled: true
+    path: "src/db/migrations"
 
 redis:
   address: "redis:6379"

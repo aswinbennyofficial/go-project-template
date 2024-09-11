@@ -5,7 +5,7 @@ import (
     "fmt"
     "myapp/src/utils"
     "time"
-    "github.com/jackc/pgx/v4/pgxpool"
+    "github.com/jackc/pgx/v5/pgxpool"
     "github.com/rs/zerolog"
 )
 
@@ -19,7 +19,7 @@ func NewPostgresConnection(config utils.PostgresConfig, log zerolog.Logger) (*pg
     // Retry logic for database connection
     for i := 0; i < 30; i++ { // Retry up to 30 times (5 minutes total)
         ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-        db, err = pgxpool.Connect(ctx, dsn)
+        db, err = pgxpool.New(ctx, dsn)
         cancel()
 
         if err == nil {
