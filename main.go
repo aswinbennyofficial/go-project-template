@@ -23,6 +23,14 @@ func main() {
     }
     defer dbConn.Close()
 
+    if cfg.Database.Migrations.Enabled {
+		logger.Info().Msg("Running database migrations")
+		if err := db.Migrate(dbConn, cfg.Database.Migrations.Path); err != nil {
+			logger.Fatal().Err(err).Msg("Failed to run database migrations")
+		}
+		logger.Info().Msg("Database migrations completed successfully")
+	}
+
     redisClient := redis.NewRedisClient(cfg.Redis, logger)
     defer redisClient.Close()
 

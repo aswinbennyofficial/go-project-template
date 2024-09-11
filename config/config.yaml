@@ -11,7 +11,7 @@ database:
   dbname: "myapp_db"
   migrations:
     enabled: true
-    path: "src/db/migrations"
+    path: "/app/migrations"
 
 redis:
   address: "redis:6379"

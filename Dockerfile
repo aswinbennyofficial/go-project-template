@@ -27,6 +27,12 @@ COPY config ./config
 # Create logs directory
 RUN mkdir -p /app/logs && chmod 777 /app/logs
 
+# Create Migration directory
+RUN mkdir -p /app/migrations && chmod 777 /app/migrations
+
+# Copy the migrations
+COPY src/db/migrations ./migrations
+
 # Expose port
 EXPOSE 8080
 

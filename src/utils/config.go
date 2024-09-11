@@ -25,6 +25,12 @@ type PostgresConfig struct {
     User     string `mapstructure:"user"`
     Password string `mapstructure:"password"`
     DBName   string `mapstructure:"dbname"`
+    Migrations MigrationsConfig `mapstructure:"migrations"`
+}
+
+type MigrationsConfig struct {
+    Enabled bool   `mapstructure:"enabled"`
+    Path    string `mapstructure:"path"`
 }
 
 type RedisConfig struct {
