@@ -18,43 +18,33 @@ func NewLogger(config utils.LogConfig) zerolog.Logger {
 	var output io.Writer = os.Stdout
 
 	if config.Output == "file" {
-		log.Printf("Configuring file and console output: %s\n", config.File.Path)
-		
 		// Ensure the directory exists
 		dir := filepath.Dir(config.File.Path)
 		if err := os.MkdirAll(dir, 0755); err != nil {
+			// Use log package to print errors before zerolog is set up
 			log.Printf("Failed to create log directory: %v\n", err)
 		}
 		
 		fileOutput := &lumberjack.Logger{
 			Filename:   config.File.Path,
-			MaxSize:    config.File.MaxSize,
-			MaxAge:     config.File.MaxAge,
-			MaxBackups: config.File.MaxBackups,
-			Compress:   true,
+			MaxSize:    config.File.MaxSize,    // Max megabytes before file is rotated
+			MaxAge:     config.File.MaxAge,     // Max days to retain old log files
+			MaxBackups: config.File.MaxBackups, // Max number of old log files to retain
+			Compress:   true,                   // Compress log files
 		}
 		
-		// Try to open the file to check if we have write permissions
-		f, err := os.OpenFile(config.File.Path, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-		if err != nil {
-			log.Printf("Failed to open log file: %v\n", err)
-		} else {
-			f.Close()
-		}
-		
-		// Use MultiWriter to write to both console and file
+		// Combine stdout and file output
 		output = zerolog.MultiLevelWriter(os.Stdout, fileOutput)
-	} else {
-		log.Println("Configuring console output only")
 	}
 
 	logger := zerolog.New(output).With().Timestamp().Logger()
 	
+	// Set the log level
 	level, err := zerolog.ParseLevel(config.Level)
 	if err != nil {
-		log.Printf("Failed to parse log level '%s': %v\n", config.Level, err)
+		log.Printf("Invalid log level '%s', falling back to Info: %v\n", config.Level, err)
 		level = zerolog.InfoLevel
 	}
-	
+
 	return logger.Level(level)
 }
