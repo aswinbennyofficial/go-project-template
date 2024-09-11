@@ -24,6 +24,9 @@ COPY --from=builder /app/main .
 # Copy the config directory
 COPY config ./config
 
+# Create logs directory
+RUN mkdir -p /app/logs && chmod 777 /app/logs
+
 # Expose port
 EXPOSE 8080
 

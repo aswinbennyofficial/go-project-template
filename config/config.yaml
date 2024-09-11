@@ -17,9 +17,9 @@ redis:
 
 log:
   level: "info"
-  output: "console"
+  output: "file"
   file:
-    path: "/var/log/myapp.log"
+    path: "/app/logs/myapp.log"
     max_size: 100
     max_age: 30
     max_backups: 3

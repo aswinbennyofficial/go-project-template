@@ -6,10 +6,10 @@ import (
     "myapp/src/utils"
     "time"
     "github.com/jackc/pgx/v4/pgxpool"
-    "github.com/rs/zerolog/log"
+    "github.com/rs/zerolog"
 )
 
-func NewPostgresConnection(config utils.PostgresConfig) (*pgxpool.Pool, error) {
+func NewPostgresConnection(config utils.PostgresConfig, log zerolog.Logger) (*pgxpool.Pool, error) {
     dsn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s pool_max_conns=10", 
         config.Host, config.Port, config.User, config.Password, config.DBName)
 

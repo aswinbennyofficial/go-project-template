@@ -1,11 +1,13 @@
 package main
 
 import (
-    "myapp/src/db"
-    "myapp/src/log"
-    "myapp/src/redis"
-    "myapp/src/server"
-    "myapp/src/utils"
+	"log"
+	"myapp/src/db"
+	logs "myapp/src/log"
+
+	"myapp/src/redis"
+	"myapp/src/server"
+	"myapp/src/utils"
 )
 
 func main() {
@@ -14,15 +16,15 @@ func main() {
         panic(err)
     }
     
-    logger := log.NewLogger(cfg.Log)
+    logger := logs.NewLogger(cfg.Log)
 
-    dbConn, err := db.NewPostgresConnection(cfg.Database)
+    dbConn, err := db.NewPostgresConnection(cfg.Database, logger)
     if err != nil {
         logger.Fatal().Err(err).Msg("Failed to connect to database")
     }
     defer dbConn.Close()
 
-    redisClient := redis.NewRedisClient(cfg.Redis)
+    redisClient := redis.NewRedisClient(cfg.Redis, logger)
     defer redisClient.Close()
 
     app := &utils.App{
@@ -35,3 +37,4 @@ func main() {
     srv := server.NewServer(app)
     srv.Start()
 }
+
