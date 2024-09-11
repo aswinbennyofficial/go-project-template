@@ -1,7 +1,6 @@
 package main
 
 import (
-	"log"
 	"myapp/src/db"
 	logs "myapp/src/log"
 
