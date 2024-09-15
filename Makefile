@@ -1,9 +1,17 @@
-.PHONY: build run
+.PHONY: build up run kill
 
 build:
-    podman-compose build
+	@echo "Building Docker image..."
+	podman build .
 
-run: build
-    podman-compose up
+up:
+	@echo "Running container..."
+	podman-compose up
+
+run: build up
+
+kill:
+	@echo "Stopping containers..."
+	podman-compose down
 
 

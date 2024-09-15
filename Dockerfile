@@ -11,8 +11,8 @@ RUN go mod download
 # Copy the source code and config
 COPY . .
 
-# Build the application
-RUN go build -o main .
+# Build the application with multi-core parallelism
+RUN GOMAXPROCS=$(nproc) go build -o main .
 
 # Final stage
 FROM alpine:3.14
@@ -24,11 +24,8 @@ COPY --from=builder /app/main .
 # Copy the config directory
 COPY config ./config
 
-# Create logs directory
-RUN mkdir -p /app/logs && chmod 777 /app/logs
-
-# Create Migration directory
-RUN mkdir -p /app/migrations && chmod 777 /app/migrations
+# Create logs and migration directories
+RUN mkdir -p /app/logs /app/migrations && chmod 777 /app/logs /app/migrations
 
 # Copy the migrations
 COPY src/db/migrations ./migrations

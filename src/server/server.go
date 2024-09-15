@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"myapp/src/server/handlers"
 	"myapp/src/server/middleware"
 	"myapp/src/utils"
 
@@ -11,7 +12,6 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/jwtauth/v5"
 	"github.com/rs/zerolog"
-	
 )
 
 type Server struct {
@@ -29,6 +29,7 @@ func NewServer(app *utils.App) *Server {
 func (s *Server) Start() {
     r := chi.NewRouter()
 
+
     tokenAuth := middlewares.InitJWTAuth(s.App.Config.Auth.JWTSecret)
 
     r.Use(middleware.RequestID)
@@ -36,12 +37,13 @@ func (s *Server) Start() {
     r.Use(middlewares.ZerologRequestLogger(s.Logger))
     r.Use(middleware.Recoverer)
     
-    r.Use(jwtauth.Verifier(tokenAuth))
-    r.Use(jwtauth.Authenticator(tokenAuth))
 
-
-    r.Get("/", s.HomeHandler)
-    // Add more routes as needed
+    r.Route("/api/v1", func(r chi.Router) {
+        r.Use(jwtauth.Verifier(tokenAuth))
+        r.Use(jwtauth.Authenticator(tokenAuth))
+    
+        r.Get("/home", handlers.HomeHandler(s.App, s.Logger)) 
+    })
 
     addr := fmt.Sprintf(":%d", s.App.Config.App.Port)
     s.App.Logger.Info().Msgf("Starting server on %s", addr)

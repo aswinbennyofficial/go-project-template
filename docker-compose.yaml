@@ -8,7 +8,7 @@ services:
     depends_on:
       - db
       - redis
-    restart: on-failure
+    restart: unless-stopped
 
   db:
     image: bitnami/postgresql
