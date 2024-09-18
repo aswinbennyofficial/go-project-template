@@ -32,7 +32,7 @@ func NewPostgresConnection(config config.PostgresConfig, log zerolog.Logger) (*p
             break
         }
         log.Error().Err(err).Msgf("Failed to connect to database, retrying (%d/60)...", i+1)
-        time.Sleep(10 * time.Second) // Wait 10 seconds before retrying
+        time.Sleep(5 * time.Second) // Wait 10 seconds before retrying
     }
     
     if err != nil {
