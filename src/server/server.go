@@ -2,50 +2,48 @@ package server
 
 import (
 	"fmt"
-	"net/http"
-
 	"myapp/src/config"
 	"myapp/src/server/handlers"
 	"myapp/src/server/middleware"
 
-	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
-	"github.com/go-chi/jwtauth/v5"
+	"github.com/labstack/echo-jwt/v4"
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 	"github.com/rs/zerolog"
 )
 
 type Server struct {
-    App *config.App
-    Logger zerolog.Logger
+	App    *config.App
+	Logger zerolog.Logger
 }
 
 func NewServer(app *config.App) *Server {
-    return &Server{
+	return &Server{
 		App:    app,
 		Logger: app.Logger,
 	}
 }
 
 func (s *Server) Start() {
-    r := chi.NewRouter()
+	e := echo.New()
 
+	// Middleware
+	e.Use(middleware.RequestID())
+	e.Use(middlewares.ZerologLogger(s.Logger))
+	e.Use(middleware.Recover())
 
-    tokenAuth := middlewares.InitJWTAuth(s.App.Config.Auth.JWTSecret)
+	// JWT middleware
+	jwtConfig := echojwt.Config{
+		SigningKey: []byte(s.App.Config.Auth.JWTSecret),
+	}
 
-    r.Use(middleware.RequestID)
-    r.Use(middleware.RealIP)
-    r.Use(middlewares.ZerologRequestLogger(s.Logger))
-    r.Use(middleware.Recoverer)
-    
+	// Routes
+	v1 := e.Group("/api/v1")
+	v1.Use(echojwt.WithConfig(jwtConfig))
+	v1.GET("/home", handlers.HomeHandler(s.App, s.Logger))
 
-    r.Route("/api/v1", func(r chi.Router) {
-        r.Use(jwtauth.Verifier(tokenAuth))
-        r.Use(jwtauth.Authenticator(tokenAuth))
-    
-        r.Get("/home", handlers.HomeHandler(s.App, s.Logger)) 
-    })
-
-    addr := fmt.Sprintf(":%d", s.App.Config.App.Port)
-    s.App.Logger.Info().Msgf("Starting server on %s", addr)
-    http.ListenAndServe(addr, r)
+	// Start server
+	addr := fmt.Sprintf(":%d", s.App.Config.App.Port)
+	s.App.Logger.Info().Msgf("Starting server on %s", addr)
+	e.Logger.Fatal(e.Start(addr))
 }

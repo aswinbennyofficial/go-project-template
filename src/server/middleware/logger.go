@@ -1,28 +1,24 @@
 package middlewares
 
-import(
-	"net/http"
-	"github.com/go-chi/chi/v5/middleware"
+import (
+	"github.com/labstack/echo/v4"
 	"github.com/rs/zerolog"
-	"time"
-
 )
 
-// ZerologRequestLogger is a custom middleware that logs HTTP requests using zerolog
-func ZerologRequestLogger(logger zerolog.Logger) func(next http.Handler) http.Handler {
-	return func(next http.Handler) http.Handler {
-		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			start := time.Now()
-			ww := middleware.NewWrapResponseWriter(w, r.ProtoMajor)
-			defer func() {
-				logger.Info().
-					Str("method", r.Method).
-					Str("url", r.URL.String()).
-					Int("status", ww.Status()).
-					Dur("duration", time.Since(start)).
-					Msg("handled request")
-			}()
-			next.ServeHTTP(ww, r)
-		})
+func ZerologLogger(logger zerolog.Logger) echo.MiddlewareFunc {
+	return func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			req := c.Request()
+			res := c.Response()
+
+			logger.Info().
+				Str("method", req.Method).
+				Str("uri", req.RequestURI).
+				Str("remote_ip", c.RealIP()).
+				Int("status", res.Status).
+				Msg("Request")
+
+			return next(c)
+		}
 	}
 }
