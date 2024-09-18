@@ -1,15 +1,15 @@
 package redis
 
 import (
-    "context"
-    "myapp/src/utils"
-    "time"
+	"context"
+	"myapp/src/config"
+	"time"
 
-    "github.com/go-redis/redis/v8"
-    "github.com/rs/zerolog"
+	"github.com/go-redis/redis/v8"
+	"github.com/rs/zerolog"
 )
 
-func NewRedisClient(config utils.RedisConfig, log zerolog.Logger) *redis.Client {
+func NewRedisClient(config config.RedisConfig, log zerolog.Logger) *redis.Client {
     var client *redis.Client
     var err error
 

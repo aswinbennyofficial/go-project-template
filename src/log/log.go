@@ -3,7 +3,7 @@ package logs
 import (
 	"io"
 	"log"
-	"myapp/src/utils"
+	"myapp/src/config"
 	"os"
 	"path/filepath"
 
@@ -12,7 +12,7 @@ import (
 	"gopkg.in/natefinch/lumberjack.v2"
 )
 
-func NewLogger(config utils.LogConfig) zerolog.Logger {
+func NewLogger(config config.LogConfig) zerolog.Logger {
 	zerolog.ErrorStackMarshaler = pkgerrors.MarshalStack
 	
 	var output io.Writer = os.Stdout

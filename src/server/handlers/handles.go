@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"fmt"
+	"myapp/src/config"
 	"myapp/src/utils"
 	"net/http"
 
@@ -9,7 +10,7 @@ import (
 )
 
 // HomeHandler handles the home route
-func HomeHandler(app *utils.App, logger zerolog.Logger) http.HandlerFunc {
+func HomeHandler(app *config.App, logger zerolog.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Extract user ID from JWT
 		userID, err := utils.ExtractClaim(r.Context(), "user_id")

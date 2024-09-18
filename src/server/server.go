@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"net/http"
 
+	"myapp/src/config"
 	"myapp/src/server/handlers"
 	"myapp/src/server/middleware"
-	"myapp/src/utils"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -15,11 +15,11 @@ import (
 )
 
 type Server struct {
-    App *utils.App
+    App *config.App
     Logger zerolog.Logger
 }
 
-func NewServer(app *utils.App) *Server {
+func NewServer(app *config.App) *Server {
     return &Server{
 		App:    app,
 		Logger: app.Logger,
