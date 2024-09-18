@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"github.com/rs/zerolog"
+	"github.com/go-chi/render"
 )
 
 // HomeHandler handles the home route
@@ -22,7 +23,15 @@ func HomeHandler(app *config.App, logger zerolog.Logger) http.HandlerFunc {
 
 		// Log and respond with a message
 		logger.Info().Str("user_id", userID).Msg("Home page accessed")
-		response := fmt.Sprintf("Welcome to MyApp, %s!", userID)
-		w.Write([]byte(response))
+		
+		// Create the response payload
+		response := map[string]string{
+			"message": fmt.Sprintf("Welcome to MyApp, %s!", userID),
+		}
+
+		// Use Chi render to bind and respond with JSON
+		render.Status(r, http.StatusOK)
+		render.JSON(w, r, response)
+
 	}
 }
