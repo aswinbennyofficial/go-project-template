@@ -3,7 +3,7 @@ package config
 import (
     "fmt"
     "github.com/spf13/viper"
-    "github.com/go-redis/redis/v8"
+    "github.com/redis/go-redis/v9"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/rs/zerolog"
 )
