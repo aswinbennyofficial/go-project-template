@@ -2,7 +2,7 @@ package main
 
 import (
 	"myapp/src/config"
-	"myapp/src/db"
+	"myapp/src/postgres"
 	logs "myapp/src/log"
 
 	"myapp/src/redis"
@@ -17,7 +17,7 @@ func main() {
     
     logger := logs.NewLogger(cfg.Log)
 
-    dbConn, err := db.NewPostgresConnection(cfg.Database, logger)
+    dbConn, err := postgres.NewPostgresConnection(cfg.Database, logger)
     if err != nil {
         logger.Fatal().Err(err).Msg("Failed to connect to database")
     }
@@ -25,7 +25,7 @@ func main() {
 
     if cfg.Database.Migrations.Enabled {
 		logger.Info().Msg("Running database migrations")
-		if err := db.Migrate(dbConn, cfg.Database.Migrations.Path); err != nil {
+		if err := postgres.Migrate(dbConn, cfg.Database.Migrations.Path); err != nil {
 			logger.Fatal().Err(err).Msg("Failed to run database migrations")
 		}
 		logger.Info().Msg("Database migrations completed successfully")
