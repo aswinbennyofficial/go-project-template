@@ -17,6 +17,8 @@ func main() {
     
     logger := logs.NewLogger(cfg.Log)
 
+    logger.Info().Msgf("Config %v", cfg)
+
     dbConn, err := postgres.NewPostgresConnection(cfg.Postgres, logger)
     if err != nil {
         logger.Fatal().Err(err).Msg("Failed to connect to database")
@@ -37,7 +39,7 @@ func main() {
     app := &config.App{
         Config: cfg,
         Logger: logger,
-        DB:     dbConn,
+        Postgres:     dbConn,
         Redis:  redisClient,
     }
 

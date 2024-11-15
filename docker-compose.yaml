@@ -9,6 +9,25 @@ services:
       - postgres
       - redis
     restart: unless-stopped
+    networks:
+      - backend
+
+  cassandra-node1:
+    image: cassandra:latest
+    container_name: cassandra-node1
+    environment:
+      - CASSANDRA_CLUSTER_NAME=TestCluster
+      - CASSANDRA_DC=datacenter1
+      - CASSANDRA_RACK=rack1
+      - CASSANDRA_SEEDS=cassandra-node1
+      - CASSANDRA_START_RPC=true
+      - CASSANDRA_NUM_TOKENS=256
+    ports:
+      - "9042:9042"
+    volumes:
+      - cassandra-data1:/var/lib/cassandra
+    networks:
+      - backend
 
   postgres:
     image: bitnami/postgresql
@@ -19,21 +38,20 @@ services:
       - POSTGRESQL_PASSWORD=your_secure_password
     volumes:
       - postgres_data:/bitnami/postgresql
-    healthcheck:
-      test: ["CMD", "pg_isready", "-U", "myapp_user"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
+    networks:
+      - backend
 
   redis:
     image: redis/redis-stack:latest
     container_name: myredis_container
     # command: redis-server --requirepass your_redis_password
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
+    networks:
+      - backend
 
 volumes:
   postgres_data:
+  cassandra-data1:
+
+networks:
+  backend:
+    driver: bridge

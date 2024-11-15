@@ -11,7 +11,7 @@ import (
 type App struct {
     Config *Config
     Logger zerolog.Logger
-    DB     *pgxpool.Pool
+    Postgres     *pgxpool.Pool
     Redis  *redis.Client
 }
 
@@ -22,6 +22,7 @@ type Config struct {
     Redis    RedisConfig    `mapstructure:"redis"`
     Log      LogConfig      `mapstructure:"log"`
     Auth     AuthConfig     `mapstructure:"auth"`
+    Cassandra CassandraConfig `mapstructure:"cassandra"`
 }
 
 type AppConfig struct {
@@ -50,6 +51,22 @@ type RedisConfig struct {
     Password string `mapstructure:"password,omitempty"`
     DB       int    `mapstructure:"db"`
 }
+
+type CassandraConfig struct {
+    Hosts    []string `mapstructure:"hosts"`
+    Keyspace string   `mapstructure:"keyspace"`
+    Port    int      `mapstructure:"port"`
+    Username string `mapstructure:"username,omitempty"`
+    Password string `mapstructure:"password,omitempty"`
+    Consistency string `mapstructure:"consistency"`
+    Replication ReplicationConfig `mapstructure:"replication"`
+}
+
+type ReplicationConfig struct {
+    Strategy string `mapstructure:"strategy"`
+    Factor   int    `mapstructure:"factor"`
+}
+
 
 type LogConfig struct {
     Level  string  `mapstructure:"level"`
