@@ -6,11 +6,11 @@ services:
       - "8080:8080"
     container_name: myapp_container
     depends_on:
-      - db
+      - postgres
       - redis
     restart: unless-stopped
 
-  db:
+  postgres:
     image: bitnami/postgresql
     container_name: mydb_container
     environment:
@@ -28,7 +28,7 @@ services:
   redis:
     image: redis/redis-stack:latest
     container_name: myredis_container
-    command: redis-server --requirepass your_redis_password
+    # command: redis-server --requirepass your_redis_password
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s

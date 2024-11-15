@@ -3,8 +3,8 @@ app:
   version: "1.0.0"
   port: 8080
 
-database:
-  host: "db"
+postgres:
+  host: "postgres"
   port: 5432
   user: "myapp_user"
   password: "your_secure_password"
@@ -15,7 +15,8 @@ database:
 
 redis:
   address: "redis:6379"
-  password: "your_redis_password"
+  username:  ""
+  password: ""
   db: 0
 
 log:

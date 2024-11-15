@@ -17,15 +17,15 @@ func main() {
     
     logger := logs.NewLogger(cfg.Log)
 
-    dbConn, err := postgres.NewPostgresConnection(cfg.Database, logger)
+    dbConn, err := postgres.NewPostgresConnection(cfg.Postgres, logger)
     if err != nil {
         logger.Fatal().Err(err).Msg("Failed to connect to database")
     }
     defer dbConn.Close()
 
-    if cfg.Database.Migrations.Enabled {
+    if cfg.Postgres.Migrations.Enabled {
 		logger.Info().Msg("Running database migrations")
-		if err := postgres.Migrate(dbConn, cfg.Database.Migrations.Path); err != nil {
+		if err := postgres.Migrate(dbConn, cfg.Postgres.Migrations.Path); err != nil {
 			logger.Fatal().Err(err).Msg("Failed to run database migrations")
 		}
 		logger.Info().Msg("Database migrations completed successfully")

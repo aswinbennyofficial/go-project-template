@@ -3,7 +3,7 @@ package config
 import (
     "fmt"
     "github.com/spf13/viper"
-    "github.com/go-redis/redis/v8"
+    "github.com/redis/go-redis/v9"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/rs/zerolog"
 )
@@ -18,7 +18,7 @@ type App struct {
 
 type Config struct {
     App      AppConfig      `mapstructure:"app"`
-    Database PostgresConfig `mapstructure:"database"`
+    Postgres PostgresConfig `mapstructure:"postgres"`
     Redis    RedisConfig    `mapstructure:"redis"`
     Log      LogConfig      `mapstructure:"log"`
     Auth     AuthConfig     `mapstructure:"auth"`
@@ -46,7 +46,8 @@ type MigrationsConfig struct {
 
 type RedisConfig struct {
     Address  string `mapstructure:"address"`
-    Password string `mapstructure:"password"`
+    Username string `mapstructure:"username,omitempty"`
+    Password string `mapstructure:"password,omitempty"`
     DB       int    `mapstructure:"db"`
 }
 

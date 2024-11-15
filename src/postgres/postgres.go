@@ -18,13 +18,13 @@ func NewPostgresConnection(config config.PostgresConfig, log zerolog.Logger) (*p
     log.Info().Msgf("Attempting to connect to database at %s:%d", config.Host, config.Port)
     
     // Initial delay to allow database to start up
-    time.Sleep(30 * time.Second)
+    // time.Sleep(5 * time.Second)
     
     var db *pgxpool.Pool
     var err error
     
     // Retry logic for database connection
-    for i := 0; i < 60; i++ { // Retry up to 60 times (10 minutes total)
+    for i := 0; i < 10; i++ { // Retry up to 10 times (100s total)
         ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
         db, err = pgxpool.New(ctx, dsn)
         cancel()
@@ -41,7 +41,7 @@ func NewPostgresConnection(config config.PostgresConfig, log zerolog.Logger) (*p
     }
     
     // Test the connection
-    ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+    ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
     defer cancel()
     err = db.Ping(ctx)
     if err != nil {

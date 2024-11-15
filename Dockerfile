@@ -28,7 +28,7 @@ COPY config ./config
 RUN mkdir -p /app/logs /app/migrations && chmod 777 /app/logs /app/migrations
 
 # Copy the migrations
-COPY src/db/migrations ./migrations
+COPY src/postgres/migrations ./migrations
 
 # Expose port
 EXPOSE 8080
