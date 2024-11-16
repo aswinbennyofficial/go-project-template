@@ -11,7 +11,9 @@ import (
 
 func NewCassandraConnection(config config.CassandraConfig, log zerolog.Logger) (*gocql.Session,error){
 	cluster:=gocql.NewCluster(config.Hosts...)
-	// cluster.Keyspace=config.Keyspace
+	if(config.IsKeySpaceSet){
+		cluster.Keyspace=config.Keyspace	
+	}
 	cluster.Port=config.Port
 	cluster.Consistency=gocql.Quorum
 	if config.Username!="" && config.Password!="" {
@@ -32,15 +34,17 @@ func NewCassandraConnection(config config.CassandraConfig, log zerolog.Logger) (
 		session, err = cluster.CreateSession()
 		if err == nil {
 			log.Info().Msgf("Connected to Cassandra on attempt %d", attempt)
-			if err=ensureKeyspace(session, config, log);err!=nil{
-				return nil,err
-			}
-			session.Close()
-			
-			cluster.Keyspace = config.Keyspace
-			session, err = cluster.CreateSession()
-			if err!=nil{
-				return nil,err
+			if(!config.IsKeySpaceSet){
+				if err=ensureKeyspace(session, config, log);err!=nil{
+					return nil,err
+				}
+				session.Close()
+				
+				cluster.Keyspace = config.Keyspace
+				session, err = cluster.CreateSession()
+				if err!=nil{
+					return nil,err
+				}
 			}
 
 

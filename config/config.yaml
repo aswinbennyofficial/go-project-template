@@ -33,6 +33,7 @@ cassandra:
     - "cassandra-node1"
   port: 9042
   keyspace: "myapp_keyspace"
+  keyspace_isset: false
   username: "myapp_user"
   password: "your_secure_password"
   consistency: "QUORUM"

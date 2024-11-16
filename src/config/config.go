@@ -65,6 +65,7 @@ type CassandraConfig struct {
     Replication CasandraReplication `mapstructure:"replication"`
     ProtoVersion int `mapstructure:"proto_version"`
     Migrations MigrationsConfig `mapstructure:"migrations"`
+    IsKeySpaceSet bool `mapstructure:"keyspace_isset"`
 }
 
 type CasandraReplication struct{
