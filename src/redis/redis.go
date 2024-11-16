@@ -9,7 +9,7 @@ import (
     "github.com/rs/zerolog"
 )
 
-func NewRedisClient(config config.RedisConfig, log zerolog.Logger) *redis.Client {
+func NewRedisClient(config config.RedisConfig, log zerolog.Logger) (*redis.Client, error) {
     var client *redis.Client
     var err error
 
@@ -69,8 +69,8 @@ func NewRedisClient(config config.RedisConfig, log zerolog.Logger) *redis.Client
             Err(err).
             Str("address", config.Address).
             Msg("Failed to connect to Redis after all retries")
-        return nil
+        return nil,err
     }
 
-    return client
+    return client,nil
 }

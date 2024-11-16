@@ -8,6 +8,7 @@ services:
     depends_on:
       - postgres
       - redis
+      - cassandra-node1
     restart: unless-stopped
     networks:
       - backend

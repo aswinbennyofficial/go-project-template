@@ -20,7 +20,7 @@ redis:
   db: 0
 
 log:
-  level: "info"
+  level: "debug"
   output: "file"
   file:
     path: "/app/logs/myapp.log"
@@ -31,19 +31,18 @@ log:
 cassandra:
   hosts:
     - "cassandra-node1"
-    - "cassandra-node2"
-    - "cassandra-node3"
   port: 9042
   keyspace: "myapp_keyspace"
   username: "myapp_user"
   password: "your_secure_password"
   consistency: "QUORUM"
-  replication:
-    strategy: "SimpleStrategy" # Use NetworkTopologyStrategy for multi-datacenter setups
-    factor: 3                  # Number of replicas for each piece of data
+  proto_version: 4
   migrations:
     enabled: true
     path: "/app/migrations/cassandra"
+  replication:
+    strategy: "SimpleStrategy"
+    replication_factor: 1
 
 
 auth:

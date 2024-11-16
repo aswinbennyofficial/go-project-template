@@ -15,7 +15,7 @@ func NewPostgresConnection(config config.PostgresConfig, log zerolog.Logger) (*p
     dsn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s pool_max_conns=10",
         config.Host, config.Port, config.User, config.Password, config.DBName)
     
-    log.Info().Msgf("Attempting to connect to database at %s:%d", config.Host, config.Port)
+    log.Info().Msgf("Attempting to connect to postgres at %s:%d", config.Host, config.Port)
     
     // Initial delay to allow database to start up
     // time.Sleep(5 * time.Second)
@@ -31,12 +31,11 @@ func NewPostgresConnection(config config.PostgresConfig, log zerolog.Logger) (*p
         if err == nil {
             break
         }
-        log.Error().Err(err).Msgf("Failed to connect to database, retrying (%d/60)...", i+1)
+        log.Error().Err(err).Msgf("Failed to connect to postgres, retrying (%d/60)...", i+1)
         time.Sleep(10 * time.Second) // Wait 10 seconds before retrying
     }
     
     if err != nil {
-        log.Fatal().Err(err).Msg("Failed to connect to database after retries")
         return nil, err
     }
     
@@ -45,10 +44,10 @@ func NewPostgresConnection(config config.PostgresConfig, log zerolog.Logger) (*p
     defer cancel()
     err = db.Ping(ctx)
     if err != nil {
-        log.Fatal().Err(err).Msg("Failed to ping database")
+        log.Fatal().Err(err).Msg("Failed to ping postgres")
         return nil, err
     }
     
-    log.Info().Msg("Connected to database successfully")
+    log.Info().Msg("Connected to postgres successfully")
     return db, nil
 }

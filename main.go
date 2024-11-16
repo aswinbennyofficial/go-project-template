@@ -1,9 +1,10 @@
 package main
 
 import (
+	"myapp/src/cassandra"
 	"myapp/src/config"
-	"myapp/src/postgres"
 	logs "myapp/src/log"
+	"myapp/src/postgres"
 
 	"myapp/src/redis"
 	"myapp/src/server"
@@ -19,28 +20,39 @@ func main() {
 
     logger.Info().Msgf("Config %v", cfg)
 
-    dbConn, err := postgres.NewPostgresConnection(cfg.Postgres, logger)
+    pgConn, err := postgres.NewPostgresConnection(cfg.Postgres, logger)
     if err != nil {
         logger.Fatal().Err(err).Msg("Failed to connect to database")
     }
-    defer dbConn.Close()
+    defer pgConn.Close()
 
     if cfg.Postgres.Migrations.Enabled {
 		logger.Info().Msg("Running database migrations")
-		if err := postgres.Migrate(dbConn, cfg.Postgres.Migrations.Path); err != nil {
+		if err := postgres.Migrate(pgConn, cfg.Postgres.Migrations.Path); err != nil {
 			logger.Fatal().Err(err).Msg("Failed to run database migrations")
 		}
 		logger.Info().Msg("Database migrations completed successfully")
 	}
 
-    redisClient := redis.NewRedisClient(cfg.Redis, logger)
+    cassandraClient,err := cassandra.NewCassandraConnection(cfg.Cassandra,logger)
+    if err!=nil{
+        logger.Fatal().Err(err).Msg("Failed to connect to cassandra")
+    }
+    defer cassandraClient.Close()
+
+
+    redisClient,err := redis.NewRedisClient(cfg.Redis, logger)
+    if err != nil {
+        logger.Fatal().Err(err).Msg("Failed to connect to Redis")
+    }
     defer redisClient.Close()
 
     app := &config.App{
         Config: cfg,
         Logger: logger,
-        Postgres:     dbConn,
+        Postgres: pgConn,
         Redis:  redisClient,
+        Cassandra: cassandraClient,
     }
 
     srv := server.NewServer(app)

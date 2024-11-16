@@ -1,11 +1,13 @@
 package config
 
 import (
-    "fmt"
-    "github.com/spf13/viper"
-    "github.com/redis/go-redis/v9"
+	"fmt"
+
+	"github.com/gocql/gocql"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/redis/go-redis/v9"
 	"github.com/rs/zerolog"
+	"github.com/spf13/viper"
 )
 
 type App struct {
@@ -13,6 +15,7 @@ type App struct {
     Logger zerolog.Logger
     Postgres     *pgxpool.Pool
     Redis  *redis.Client
+    Cassandra *gocql.Session
 }
 
 
@@ -59,13 +62,15 @@ type CassandraConfig struct {
     Username string `mapstructure:"username,omitempty"`
     Password string `mapstructure:"password,omitempty"`
     Consistency string `mapstructure:"consistency"`
-    Replication ReplicationConfig `mapstructure:"replication"`
+    Replication CasandraReplication `mapstructure:"replication"`
+    ProtoVersion int `mapstructure:"proto_version"`
 }
 
-type ReplicationConfig struct {
+type CasandraReplication struct{
     Strategy string `mapstructure:"strategy"`
-    Factor   int    `mapstructure:"factor"`
+    Factor int `mapstructure:"replication_factor"`
 }
+
 
 
 type LogConfig struct {
