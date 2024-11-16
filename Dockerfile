@@ -29,6 +29,7 @@ RUN mkdir -p /app/logs /app/migrations && chmod 777 /app/logs /app/migrations
 
 # Copy the migrations
 COPY src/postgres/migrations ./migrations/postgres
+COPY src/cassandra/migrations ./migrations/cassandra
 
 # Expose port
 EXPOSE 8080

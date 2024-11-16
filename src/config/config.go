@@ -64,6 +64,7 @@ type CassandraConfig struct {
     Consistency string `mapstructure:"consistency"`
     Replication CasandraReplication `mapstructure:"replication"`
     ProtoVersion int `mapstructure:"proto_version"`
+    Migrations MigrationsConfig `mapstructure:"migrations"`
 }
 
 type CasandraReplication struct{

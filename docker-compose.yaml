@@ -30,6 +30,7 @@ services:
     networks:
       - backend
 
+
   postgres:
     image: bitnami/postgresql
     container_name: mydb_container

@@ -27,9 +27,9 @@ func main() {
     defer pgConn.Close()
 
     if cfg.Postgres.Migrations.Enabled {
-		logger.Info().Msg("Running database migrations")
+		logger.Info().Msg("Running postgres migrations")
 		if err := postgres.Migrate(pgConn, cfg.Postgres.Migrations.Path); err != nil {
-			logger.Fatal().Err(err).Msg("Failed to run database migrations")
+			logger.Fatal().Err(err).Msg("Failed to run postgres migrations")
 		}
 		logger.Info().Msg("Database migrations completed successfully")
 	}
@@ -41,9 +41,20 @@ func main() {
     defer cassandraClient.Close()
 
 
+
+    if cfg.Cassandra.Migrations.Enabled {
+        err:=cassandra.Migrate(cassandraClient,logger, cfg.Cassandra.Migrations.Path, cfg.Cassandra.Keyspace)
+        if err!=nil{
+            logger.Fatal().Err(err).Msg("Failed to run cassandra migrations")
+            // logger.Error().Err(err)
+        }
+    }
+
+
     redisClient,err := redis.NewRedisClient(cfg.Redis, logger)
     if err != nil {
         logger.Fatal().Err(err).Msg("Failed to connect to Redis")
+        
     }
     defer redisClient.Close()
 
