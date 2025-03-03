@@ -38,6 +38,9 @@ func (s *Server) Start() {
     r.Use(middleware.Recoverer)
     
 
+    r.Get("/ping", handlers.PingHandler(s.App, s.Logger))
+    r.Get("/metrics", handlers.MetricsHandler())
+
     r.Route("/api/v1", func(r chi.Router) {
         r.Use(jwtauth.Verifier(tokenAuth))
         r.Use(jwtauth.Authenticator(tokenAuth))
