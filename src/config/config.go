@@ -6,6 +6,7 @@ import (
 
 	"github.com/gocql/gocql"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/rabbitmq/amqp091-go"
 	"github.com/redis/go-redis/v9"
 	"github.com/rs/zerolog"
 	"github.com/spf13/viper"
@@ -17,6 +18,7 @@ type App struct {
     Postgres     *pgxpool.Pool
     Redis  redis.UniversalClient
     Cassandra *gocql.Session
+    RabbitMQ *amqp091.Connection
 }
 
 
@@ -27,6 +29,7 @@ type Config struct {
     Log      LogConfig      `mapstructure:"log"`
     Auth     AuthConfig     `mapstructure:"auth"`
     Cassandra CassandraConfig `mapstructure:"cassandra"`
+    RabbitMQ RabbitMQConfig `mapstructure:"rabbitmq"`
 }
 
 type AppConfig struct {
@@ -56,6 +59,14 @@ type RedisConfig struct {
     Username string `mapstructure:"username,omitempty"`
     Password string `mapstructure:"password,omitempty"`
     DB       int    `mapstructure:"db"`
+}
+
+
+type RabbitMQConfig struct {
+    Mode   string `mapstructure:"mode"`
+    Address string `mapstructure:"address"`
+    ClusterAddresses []string `mapstructure:"cluster_addresses"`
+    VHost string `mapstructure:"vhost"`
 }
 
 type CassandraConfig struct {

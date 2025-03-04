@@ -5,6 +5,7 @@ import (
 	"myapp/src/config"
 	logs "myapp/src/log"
 	"myapp/src/postgres"
+	"myapp/src/rabbitmq"
 
 	"myapp/src/redis"
 	"myapp/src/server"
@@ -58,12 +59,20 @@ func main() {
     }
     defer redisClient.Close()
 
+
+    rabbitmqClient,err := rabbitmq.NewRabbitMQClientWrapper(cfg.RabbitMQ, logger)
+    if err != nil {
+        logger.Fatal().Err(err).Msg("Failed to connect to RabbitMQ")
+    }
+    defer rabbitmqClient.Close()
+
     app := &config.App{
         Config: cfg,
         Logger: logger,
         Postgres: pgConn,
         Redis:  redisClient,
         Cassandra: cassandraClient,
+        RabbitMQ: rabbitmqClient,
     }
 
     srv := server.NewServer(app)

@@ -24,6 +24,16 @@ redis:
   password: ""
   db: 0
 
+rabbitmq:
+  mode: "standalone"  # Change to "cluster" if using multiple nodes
+  address: "amqp://user:password@rabbitmq:5672/"  # Used in standalone mode
+  cluster_addresses:  # Used in cluster mode
+    - "amqp://user:password@rabbitmq-node1:5672/"
+    - "amqp://user:password@rabbitmq-node2:5672/"
+    - "amqp://user:password@rabbitmq-node3:5672/"
+  vhost: "/"
+
+
 log:
   level: "debug"
   output: "file"

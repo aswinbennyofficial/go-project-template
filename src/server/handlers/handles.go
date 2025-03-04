@@ -19,6 +19,7 @@ func PingHandler(app *config.App, logger zerolog.Logger) http.HandlerFunc {
 			Postgres  string `json:"postgres"`
 			Redis     string `json:"redis"`
 			Cassandra string `json:"cassandra"`
+			RabbitMQ string `json:"rabbitmq"`
 		}
 
 		resp := response{}
@@ -45,6 +46,14 @@ func PingHandler(app *config.App, logger zerolog.Logger) http.HandlerFunc {
 			resp.Cassandra = fmt.Sprintf("err: %s", err)
 		} else {
 			resp.Cassandra = "ok"
+		}
+
+		// Ping RabbitMQ
+		if _, err := app.RabbitMQ.Channel(); err != nil {
+			logger.Error().Err(err).Msg("Failed to ping rabbitmq")
+			resp.RabbitMQ = fmt.Sprintf("err: %s", err)
+		} else {
+			resp.RabbitMQ = "ok"
 		}
 
 		// If any dependency is down, return HTTP 500
