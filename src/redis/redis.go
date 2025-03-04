@@ -9,36 +9,28 @@ import (
     "github.com/rs/zerolog"
 )
 
-func NewRedisClient(config config.RedisConfig, log zerolog.Logger) (*redis.Client, error) {
+// NewRedisClientWrapper selects the appropriate Redis client based on config
+func NewRedisClientWrapper(config config.RedisConfig, log zerolog.Logger) (redis.UniversalClient, error) {
+    if config.Mode == "cluster" {
+        return NewClusterRedisClient(config, log)
+    }
+    return NewStandaloneRedisClient(config, log)
+}
+
+
+// NewStandaloneRedisClient initializes a single Redis instance client
+func NewStandaloneRedisClient(config config.RedisConfig, log zerolog.Logger) (*redis.Client, error) {
     var client *redis.Client
     var err error
 
-    // Retry logic for Redis connection
     for i := 0; i < 30; i++ { // Retry up to 30 times (5 minutes total)
-        if config.Username == "" {
-            // No username, use only password if provided
-            client = redis.NewClient(&redis.Options{
-                Addr:     config.Address,
-                Password: config.Password,
-                DB:       config.DB,
-            })
-        } else if config.Password == "" {
-            // Username provided, but no password
-            client = redis.NewClient(&redis.Options{
-                Addr:     config.Address,
-                DB:       config.DB,
-            })
-        } else {
-            // Username and password provided
-            client = redis.NewClient(&redis.Options{
-                Addr:     config.Address,
-                Username: config.Username,
-                Password: config.Password,
-                DB:       config.DB,
-            })
-        }
+        client = redis.NewClient(&redis.Options{
+            Addr:     config.Address,
+            Username: config.Username,
+            Password: config.Password,
+            DB:       config.DB,
+        })
 
-        // Test the connection
         ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
         _, err = client.Ping(ctx).Result()
         cancel()
@@ -48,29 +40,67 @@ func NewRedisClient(config config.RedisConfig, log zerolog.Logger) (*redis.Clien
                 Str("address", config.Address).
                 Int("db", config.DB).
                 Bool("auth_enabled", config.Username != "" || config.Password != "").
-                Msg("Connected to Redis successfully")
-            break
+                Msg("Connected to Redis (Standalone) successfully")
+            return client, nil
         }
 
         log.Warn().
             Err(err).
             Int("attempt", i+1).
             Int("max_attempts", 30).
-            Msg("Failed to connect to Redis, retrying...")
+            Msg("Failed to connect to Redis (Standalone), retrying...")
 
-        if client != nil {
-            _ = client.Close()
-        }
+        client.Close()
         time.Sleep(10 * time.Second) // Wait 10 seconds before retrying
     }
 
-    if err != nil {
-        log.Fatal().
+    log.Fatal().
+        Err(err).
+        Str("address", config.Address).
+        Msg("Failed to connect to Redis (Standalone) after all retries")
+    return nil, err
+}
+
+
+// NewClusterRedisClient initializes a Redis Cluster client
+func NewClusterRedisClient(config config.RedisConfig, log zerolog.Logger) (*redis.ClusterClient, error) {
+    var client *redis.ClusterClient
+    var err error
+
+    for i := 0; i < 30; i++ { // Retry up to 30 times (5 minutes total)
+        client = redis.NewClusterClient(&redis.ClusterOptions{
+            Addrs:    config.ClusterAddresses,
+            Username: config.Username,
+            Password: config.Password,
+        })
+
+        ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+        _, err = client.Ping(ctx).Result()
+        cancel()
+
+        if err == nil {
+            log.Info().
+                Strs("addresses", config.ClusterAddresses).
+                Bool("auth_enabled", config.Username != "" || config.Password != "").
+                Msg("Connected to Redis (Cluster) successfully")
+            return client, nil
+        }
+
+        log.Warn().
             Err(err).
-            Str("address", config.Address).
-            Msg("Failed to connect to Redis after all retries")
-        return nil,err
+            Int("attempt", i+1).
+            Int("max_attempts", 30).
+            Msg("Failed to connect to Redis (Cluster), retrying...")
+
+        client.Close()
+        time.Sleep(10 * time.Second) // Wait 10 seconds before retrying
     }
 
-    return client,nil
+    log.Fatal().
+        Err(err).
+        Strs("addresses", config.ClusterAddresses).
+        Msg("Failed to connect to Redis (Cluster) after all retries")
+    return nil, err
 }
+
+

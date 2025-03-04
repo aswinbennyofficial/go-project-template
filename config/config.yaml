@@ -14,7 +14,12 @@ postgres:
     path: "/app/migrations/postgres"
 
 redis:
-  address: "redis:6379"
+  mode: "standalone"  # Change to "cluster" if using Redis Cluster
+  address: "redis:6379"  # Used only in standalone mode
+  cluster_addresses:     # Used only in cluster mode
+    - "redis-node-1:6379"
+    - "redis-node-2:6379"
+    - "redis-node-3:6379"
   username:  ""
   password: ""
   db: 0

@@ -15,7 +15,7 @@ type App struct {
     Config *Config
     Logger zerolog.Logger
     Postgres     *pgxpool.Pool
-    Redis  *redis.Client
+    Redis  redis.UniversalClient
     Cassandra *gocql.Session
 }
 
@@ -50,7 +50,9 @@ type MigrationsConfig struct {
 }
 
 type RedisConfig struct {
+    Mode    string `mapstructure:"mode"`
     Address  string `mapstructure:"address"`
+    ClusterAddresses []string `mapstructure:"cluster_addresses"` 
     Username string `mapstructure:"username,omitempty"`
     Password string `mapstructure:"password,omitempty"`
     DB       int    `mapstructure:"db"`
