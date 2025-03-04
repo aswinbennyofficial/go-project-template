@@ -57,7 +57,7 @@ func PingHandler(app *config.App, logger zerolog.Logger) http.HandlerFunc {
 		}
 
 		// If any dependency is down, return HTTP 500
-		if resp.Postgres != "ok" || resp.Redis != "ok" || resp.Cassandra != "ok" {
+		if resp.Postgres != "ok" || resp.Redis != "ok" || resp.Cassandra != "ok"  || resp.RabbitMQ != "ok" {
 			w.WriteHeader(http.StatusInternalServerError)
 		} else {
 			render.Status(r, http.StatusOK)
