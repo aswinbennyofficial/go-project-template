@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/gocql/gocql"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -105,6 +106,11 @@ func LoadConfig() (*Config, error) {
     var config Config
     if err := viper.Unmarshal(&config); err != nil {
         return nil, fmt.Errorf("failed to unmarshal config: %w", err)
+    }
+
+    // overwite log level from env if exists
+    if os.Getenv("LOG_LEVEL") != "" {
+        config.Log.Level = os.Getenv("LOG_LEVEL")
     }
 
     return &config, nil
